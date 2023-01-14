@@ -7,7 +7,7 @@ dotenv.config();
 
 const configuration = new Configuration({
     apiKey: process.env.OPENAI_API_KEY,
-});
+  });
 
 const openai = new OpenAIApi(configuration);
 
@@ -25,23 +25,23 @@ app.post('/', async (req, res) => {
     try{
         const prompt = req.body.prompt;
 
-        const response = await openai.Completion.create(
-            model="text-davinci-003",
-            prompt=`${prompot}`,
-            temperature=0.7,
-            max_tokens=64,
-            top_p=1,
-            frequency_penalty=0,
-            presence_penalty=0,
-          );
+        const response = await openai.createCompletion({
+            model: "text-davinci-003",
+            prompt: `${prompt}`,
+            temperature: 0,
+            max_tokens: 3000,
+            top_p: 1,
+            frequency_penalty: 0.5,
+            presence_penalty: 0
+          });
 
         res.status(200).send({
-            bot: res.addTrailers.choices[0].text
-        })
+            bot: response.data.choices[0].text
+        });
 
-    }catch(error){
+    }catch(err){
         console.log(err);
-        res.status(500).send({err})
+        res.status(500).send({err} || 'Something went wrong')
     }
 })
 
